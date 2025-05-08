@@ -12,22 +12,6 @@ class Controller {
         }
     }
 
-    static async login (req, res) {
-        try {
-            res.render('login')
-        } catch (error) {
-            res.send(error)
-        }
-    }
-
-    static async register (req, res) {
-        try {
-            res.render('register')
-        } catch (error) {
-            res.send(error)
-        }
-    }
-
     static async dashboard (req, res) {
         try {
             if (!req.session.user) {
@@ -195,10 +179,147 @@ class Controller {
         }
     }
 
-    
+    static async getCart (req, res) {
+        try {
+            const userId = req.session.user.id;
 
+            const cart = await Order.findOrCreateCart(userId);
+            const cartWithProducts = await Order.getCartWithProducts(cart.id, { Product, OrderProduct });
+            
+            // Calculate totals
+            const { totalItems, totalAmount } = Order.calculateCartTotals(cartWithProducts);
+            
+            // Update cart total if needed
+            await Order.updateCartTotal(cart, totalAmount);
+            
+            // Render cart template with data
+            res.render('cart', {
+                cart: cartWithProducts,
+                totalItems,
+                totalAmount,
+                user: req.session.user
+            });
+        } catch (error) {
+            console.log(error)
+            res.send(error)
+        }
+    }
 
+    static async addToCart (req, res) {
+        try {
+            const userId = req.session.user.id;
+            const productId = req.params.id;
+            
+            // Find the product
+            const product = await Product.findByPk(productId);
+            if (!product) {
+                req.flash('error', 'Product not found');
+                return res.redirect('/dashboard');
+            }
+            
+            // Find or create user's cart
+            const [cart] = await Order.findOrCreate({
+                where: {
+                UserId: userId,
+                orderStatus: 'cart'
+                },
+                defaults: {
+                UserId: userId,
+                orderDate: new Date(),
+                orderStatus: 'cart',
+                orderTotal: 0
+                }
+            });
+            
+            // Check if product already in cart
+            const existingItem = await OrderProduct.findOne({
+                where: {
+                OrderId: cart.id,
+                ProductId: productId
+                }
+            });
+            
+            if (existingItem) {
+                // Update quantity if product already in cart
+                await existingItem.update({
+                quantity: existingItem.quantity + 1
+                });
+            } else {
+                // Add new product to cart
+                await OrderProduct.create({
+                OrderId: cart.id,
+                ProductId: productId,
+                quantity: 1,
+                price: product.price // Store current price
+                });
+            }
+            
+            // Update cart total
+            const cartItems = await OrderProduct.findAll({
+                where: { OrderId: cart.id }
+            });
+            
+            const newTotal = cartItems.reduce((sum, item) => {
+                return sum + (item.price * item.quantity);
+            }, 0);
+            
+            await cart.update({ orderTotal: newTotal });
+            
+            res.redirect('/dashboard');
+        } catch (error) {
+            console.log(error)
+            res.send(error)
+        }
+    }
 
+    static async removeCartItem (req, res) {
+        try {
+            const userId = req.session.user.id;
+            const productId = req.params.id;
+            
+            // Find user's cart
+            const cart = await Order.findOne({
+                where: {
+                UserId: userId,
+                orderStatus: 'cart'
+                }
+            });
+            
+            if (!cart) {
+                req.flash('error', 'Cart not found');
+                return res.redirect('/cart');
+            }
+            
+            // Delete the cart item
+            const result = await OrderProduct.destroy({
+                where: {
+                OrderId: cart.id,
+                ProductId: productId
+                }
+            });
+            
+            if (result === 0) {
+                req.flash('error', 'Product not found in cart');
+                return res.redirect('/cart');
+            }
+            
+            // Recalculate cart total
+            const cartItems = await OrderProduct.findAll({
+                where: { OrderId: cart.id }
+            });
+            
+            const newTotal = cartItems.reduce((sum, item) => {
+                return sum + (item.price * item.quantity);
+            }, 0);
+            
+            await cart.update({ orderTotal: newTotal });
+            
+            res.redirect('/cart');
+        } catch (error) {
+            console.log(error)
+            res.send(error)
+        }
+    }
 }
 
 module.exports = Controller

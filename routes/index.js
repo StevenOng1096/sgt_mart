@@ -4,6 +4,7 @@ const router = express.Router();
 const loginRoutes = require('./login');
 const registerRoutes = require('./register');
 const profileRoutes = require('../routes/profile');
+const cartRoutes = require('../routes/cart');
 
 const Controller = require('../controllers/controller');
 const { isAuthenticated, isAdmin } = require('../middlewares/auth');
@@ -18,6 +19,9 @@ router.use('/register', registerRoutes);
 // Dashboard (protected route)
 router.get('/dashboard', isAuthenticated, Controller.dashboard);
 router.use('/profile', isAuthenticated, profileRoutes);
+router.use('/cart', isAuthenticated, cartRoutes)
+
+// router.get('/checkout', isAuthenticated, Controller.checkout)
 
 // Logout
 router.get('/logout', (req, res) => {
