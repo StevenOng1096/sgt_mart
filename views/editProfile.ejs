@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,5 +35,91 @@
     <br>
 
     <a href="/dashboard">dashboard</a>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+    .profile-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 25px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    .profile-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #dee2e6;
+    }
+    .action-buttons {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #dee2e6;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="profile-container">
+      <div class="profile-header">
+        <h2>Edit Profile</h2>
+      </div>
+      
+      <form action="/profile/edit" method="post">
+        <div class="mb-3 row">
+          <label for="name" class="col-sm-3 col-form-label">Name</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="name" name="name" value="<%= profile[0].name %>" required>
+          </div>
+        </div>
+        
+        <div class="mb-3 row">
+          <label for="address" class="col-sm-3 col-form-label">Address</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="address" name="address" value="<%= profile[0].address %>" required>
+          </div>
+        </div>
+        
+        <div class="mb-3 row">
+          <label for="dateOfBirth" class="col-sm-3 col-form-label">Date of Birth</label>
+          <div class="col-sm-9">
+            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" value="<%= formatDate(profile[0].dateOfBirth) %>" required>
+          </div>
+        </div>
+        
+        <div class="mb-3 row">
+          <label for="badge" class="col-sm-3 col-form-label">Badge</label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" id="badge" name="badge" value="<%= profile[0].badge %>" required>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

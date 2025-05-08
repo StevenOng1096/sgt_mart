@@ -82,6 +82,8 @@ class Controller {
             let {name, address, dateOfBirth, badge} = req.body
             let UserId = req.session.user.id
 
+            console.log(req.body)
+
             await Profile.create({
                 name,
                 address,
@@ -101,13 +103,14 @@ class Controller {
         try {
             if (!req.session.user) {
                 return res.redirect('/login');
-              }
+            }
 
             let profile = await Profile.findAll({
                 where: {
                     UserId: req.session.user.id
                 }
             })
+            
             res.render('editProfile', {profile, formatDate})
         } catch (error) {
             console.log(error);
