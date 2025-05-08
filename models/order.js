@@ -77,6 +77,103 @@ module.exports = (sequelize, DataTypes) => {
       
       return cart;
     }
+
+    static async checkout(cartId) {
+      const cart = await this.findByPk(cartId);
+      
+      if (!cart) {
+        throw new Error('Cart not found');
+      }
+      
+      // Update cart to pending order
+      await cart.update({
+        orderStatus: 'pending',
+        orderDate: new Date()
+      });
+      
+      return cart;
+    }
+
+    static async generateInvoice(orderId, models) {
+      try {
+        const { Product, OrderProduct, User } = models;
+        
+        // Get order with products
+        const order = await this.findByPk(orderId, {
+          include: [
+            {
+              model: Product,
+              through: {
+                model: OrderProduct,
+                as: 'OrderProduct',
+                attributes: ['quantity', 'price']
+              }
+            },
+            {
+              model: User,
+              attributes: ['name', 'email', 'address']
+            }
+          ]
+        });
+        
+        if (!order) {
+          throw new Error('Order not found');
+        }
+        
+        // Format products for invoice
+        const products = order.Products.map(product => {
+          return {
+            quantity: product.OrderProduct.quantity,
+            description: product.name,
+            "tax-rate": 10, // Assuming 10% tax rate
+            price: product.OrderProduct.price
+          };
+        });
+        
+        // Create invoice data
+        const data = {
+          // Customize with your business information
+          "images": {
+            // If you have a logo, use base64 string
+            "logo": "https://public.easyinvoice.cloud/img/logo_en_original.png"
+          },
+          "sender": {
+            "company": "SGT Mart",
+            "address": "Jalan Raya Bandung",
+            "zip": "40123",
+            "city": "Bandung",
+            "country": "Indonesia"
+          },
+          "client": {
+            "company": order.User?.name || "Valued Customer",
+            "address": order.User?.address || "",
+            "zip": "",
+            "city": "",
+            "country": "Indonesia"
+          },
+          "information": {
+            "number": `INV-${order.id}`,
+            "date": new Date(order.orderDate).toLocaleDateString(),
+            "due-date": new Date(order.orderDate).toLocaleDateString()
+          },
+          "products": products,
+          "bottom-notice": "Thank you for your business!",
+          "settings": {
+            "currency": "IDR"
+          }
+        };
+        
+        // Generate PDF invoice
+        const easyinvoice = require('easyinvoice');
+        const result = await easyinvoice.createInvoice(data);
+        
+        // Return PDF as buffer
+        return Buffer.from(result.pdf, 'base64');
+      } catch (error) {
+        console.error('Error generating invoice:', error);
+        throw error;
+      }
+    }
   }
   Order.init({
     UserId: DataTypes.INTEGER,

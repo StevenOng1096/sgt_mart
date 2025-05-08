@@ -5,6 +5,7 @@ const loginRoutes = require('./login');
 const registerRoutes = require('./register');
 const profileRoutes = require('../routes/profile');
 const cartRoutes = require('../routes/cart');
+const checkoutRoutes = require('../routes/checkout');
 
 const Controller = require('../controllers/controller');
 const { isAuthenticated, isAdmin } = require('../middlewares/auth');
@@ -21,7 +22,10 @@ router.get('/dashboard', isAuthenticated, Controller.dashboard);
 router.use('/profile', isAuthenticated, profileRoutes);
 router.use('/cart', isAuthenticated, cartRoutes)
 
-// router.get('/checkout', isAuthenticated, Controller.checkout)
+// router.get('/checkout')
+router.use('/checkout', isAuthenticated, checkoutRoutes)
+
+router.get('/invoice/:id', Controller.downloadInvoice);
 
 // Logout
 router.get('/logout', (req, res) => {
