@@ -5,7 +5,8 @@ const loginRoutes = require('./login');
 const registerRoutes = require('./register');
 const profileRoutes = require('../routes/profile');
 
-const Controller = require('../controllers/controller')
+const Controller = require('../controllers/controller');
+const { isAuthenticated, isAdmin } = require('../middlewares/auth');
 
 // Home route
 router.get('/', Controller.home);
@@ -15,8 +16,8 @@ router.use('/login', loginRoutes);
 router.use('/register', registerRoutes);
 
 // Dashboard (protected route)
-router.get('/dashboard', Controller.dashboard);
-router.use('/profile', profileRoutes);
+router.get('/dashboard', isAuthenticated, Controller.dashboard);
+router.use('/profile', isAuthenticated, profileRoutes);
 
 // Logout
 router.get('/logout', (req, res) => {

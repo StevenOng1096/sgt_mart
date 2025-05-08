@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const {User, Product, Category, Profile, Order, OrderProduct} = require('../models')
 const formatDate = require('../helpers/formatDate')
 
@@ -34,9 +34,23 @@ class Controller {
                 return res.redirect('/login');
             }
 
-            let products = await Product.findAll({
-                include: Category
-            })
+            let options = {
+                include: Category,
+                order: [
+                    ['id', 'ASC']
+                ], 
+                where: {}
+            }
+            let {search} = req.query;
+
+            if (search) {
+                options.where.name = {
+                    [Op.iLike] : `%${search}%`
+                }
+            }
+
+
+            let products = await Product.findAll(options)
 
             res.render('dashboard', { user: req.session.user, products });
         } catch (error) {
@@ -50,8 +64,6 @@ class Controller {
             if (!req.session.user) {
                 return res.redirect('/login');
               }
-
-              
 
             let profile = await Profile.findAll({
                 where: {
@@ -70,7 +82,13 @@ class Controller {
 
     static async getAddProfile (req, res) {
         try {
-            res.render('addProfile')
+            if (!req.session.user) {
+                return res.redirect('/login');
+              }
+
+              let {errors} = req.query
+            
+            res.render('addProfile', {errors})
         } catch (error) {
             console.log(error);
             res.send(error)
@@ -94,8 +112,14 @@ class Controller {
 
             res.redirect('/profile')
         } catch (error) {
-            console.log(error);
-            res.send(error)
+            if (error.name === 'SequelizeValidationError') {
+                let errors = error.errors.map(err => err.message)
+
+                res.redirect(`/profile/add?errors=${errors}`)
+            } else {
+                console.log(error);
+                res.send(error)
+            }
         }
     }
 
@@ -105,13 +129,15 @@ class Controller {
                 return res.redirect('/login');
             }
 
+            let {errors} = req.query
+
             let profile = await Profile.findAll({
                 where: {
                     UserId: req.session.user.id
                 }
             })
-            
-            res.render('editProfile', {profile, formatDate})
+
+            res.render('editProfile', {profile, formatDate, errors})
         } catch (error) {
             console.log(error);
             res.send(error)
@@ -137,13 +163,22 @@ class Controller {
 
             res.redirect('/profile')
         } catch (error) {
-            console.log(error);
-            res.send(error)
+            if (error.name === 'SequelizeValidationError') {
+                let errors = error.errors.map(err => err.message)
+
+                res.redirect(`/profile/edit?errors=${errors}`)
+            } else {
+                console.log(error);
+                res.send(error)
+            }
         }
     }
 
     static async deleteProfile (req, res) {
         try {
+            if (!req.session.user) {
+                return res.redirect('/login');
+              }
             
             let UserId = req.session.user.id
 
@@ -159,6 +194,10 @@ class Controller {
             res.send(error)
         }
     }
+
+    
+
+
 
 }
 

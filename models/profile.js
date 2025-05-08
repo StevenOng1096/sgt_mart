@@ -50,6 +50,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         notNull: {
           msg: 'Date of Birth cannot be null'
+        },
+        isPast(value) {
+          if (new Date(value) > new Date()) {
+            throw new Error('Date of Birth cannot be in the future');
+          }
         }
       }
     },
