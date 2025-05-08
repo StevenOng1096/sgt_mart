@@ -409,6 +409,7 @@ class Controller {
             'Expires': 0
           });
           
+        //   res.redirect('/cart');
           // Send the PDF as the response
           return res.send(invoicePdf);
           
