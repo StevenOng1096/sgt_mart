@@ -321,8 +321,62 @@ class Controller {
         }
     }
 
+    // ------------------------------ PACKAGE STILL ERROR ----------------------------------------------------------------
 
     // CHECKOUT - EASY INVOICE PACKAGE-----------------------------------------
+    // static async checkout(req, res) {
+    //     try {
+    //       const userId = req.session.user.id;
+          
+    //       // Get user's cart
+    //       const cart = await Order.findOrCreateCart(userId);
+          
+    //       // Check if cart has products
+    //       const cartWithProducts = await Order.getCartWithProducts(cart.id, { Product, OrderProduct });
+          
+    //       if (!cartWithProducts.Products || cartWithProducts.Products.length === 0) {
+    //         req.flash('error', 'Your cart is empty');
+    //         return res.redirect('/cart');
+    //       }
+          
+    //       // Process checkout
+    //       const order = await Order.checkout(cart.id);
+          
+    //       // Generate invoice (using the new static method)
+    //       const invoicePdf = await Order.generateInvoice(order.id, { Product, OrderProduct, User });
+          
+    //       // Create invoices directory if it doesn't exist
+    //       const invoicesDir = path.join(__dirname, '../public/invoices');
+    //       try {
+    //         await fs.mkdir(invoicesDir, { recursive: true });
+    //       } catch (err) {
+    //         // Directory already exists or cannot be created
+    //         console.error('Error creating invoices directory:', err);
+    //       }
+          
+    //       // Save the invoice to a file
+    //       const invoicePath = path.join(invoicesDir, `invoice-${order.id}.pdf`);
+    //       await fs.writeFile(invoicePath, invoicePdf);
+          
+    //       // Save the invoice path to the order if you have an invoicePath field
+    //       // await order.update({ invoicePath: `/invoices/invoice-${order.id}.pdf` });
+          
+    //       // Set session data for confirmation page
+    //       req.session.lastOrder = {
+    //         id: order.id,
+    //         total: order.orderTotal,
+    //         invoicePath: `/invoices/invoice-${order.id}.pdf`
+    //       };
+          
+    //       req.flash('success', 'Your order has been placed successfully!');
+    //       res.redirect('/checkout/confirmation');
+    //     } catch (error) {
+    //       console.log(error);
+    //     //   req.flash('error', 'An error occurred during checkout');
+    //       res.redirect('/cart');
+    //     }
+    //   }
+     
     static async checkout(req, res) {
         try {
           const userId = req.session.user.id;
@@ -338,98 +392,36 @@ class Controller {
             return res.redirect('/cart');
           }
           
-          // Process checkout
+          // Process checkout - Update cart to order
           const order = await Order.checkout(cart.id);
           
-          // Generate invoice (using the new static method)
+          // Generate invoice
           const invoicePdf = await Order.generateInvoice(order.id, { Product, OrderProduct, User });
           
-          // Create invoices directory if it doesn't exist
-          const invoicesDir = path.join(__dirname, '../public/invoices');
-          try {
-            await fs.mkdir(invoicesDir, { recursive: true });
-          } catch (err) {
-            // Directory already exists or cannot be created
-            console.error('Error creating invoices directory:', err);
-          }
-          
-          // Save the invoice to a file
-          const invoicePath = path.join(invoicesDir, `invoice-${order.id}.pdf`);
-          await fs.writeFile(invoicePath, invoicePdf);
-          
-          // Save the invoice path to the order if you have an invoicePath field
-          // await order.update({ invoicePath: `/invoices/invoice-${order.id}.pdf` });
-          
-          // Set session data for confirmation page
-          req.session.lastOrder = {
-            id: order.id,
-            total: order.orderTotal,
-            invoicePath: `/invoices/invoice-${order.id}.pdf`
-          };
-          
-          req.flash('success', 'Your order has been placed successfully!');
-          res.redirect('/checkout/confirmation');
-        } catch (error) {
-          console.log(error);
-        //   req.flash('error', 'An error occurred during checkout');
-          res.redirect('/cart');
-        }
-      }
-      
-      static async checkoutConfirmation(req, res) {
-        try {
-          // Check if we have order data in session
-          if (!req.session.lastOrder) {
-            return res.redirect('/cart');
-          }
-          
-          const { id, total, invoicePath } = req.session.lastOrder;
-          
-          res.render('checkout-confirmation', {
-            orderId: id,
-            total,
-            invoicePath,
-            user: req.session.user
+          // Set headers for direct download
+          res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="invoice-${order.id}.pdf"`,
+            'Content-Length': invoicePdf.length,
+            // These headers prevent caching issues
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': 0
           });
           
-          // Clear the lastOrder data from session after showing confirmation
-          delete req.session.lastOrder;
+          // Send the PDF as the response
+          return res.send(invoicePdf);
+          
         } catch (error) {
-          console.log(error);
-          res.redirect('/cart');
-        }
-      }
-      
-      static async downloadInvoice(req, res) {
-        try {
-          const orderId = req.params.id;
+          console.error('Checkout error:', error);
           
-          // Check if user owns this order
-          const order = await Order.findOne({
-            where: {
-              id: orderId,
-              UserId: req.session.user.id
-            }
-          });
-          
-          if (!order) {
-            req.flash('error', 'Order not found');
+          // If we've already created the order but just failed at invoice generation,
+          // redirect to orders page instead of cart
+          if (error.message && error.message.includes('invoice')) {
             return res.redirect('/orders');
           }
           
-          // Generate invoice
-          const invoicePdf = await Order.generateInvoice(orderId, { Product, OrderProduct, User });
-          
-          // Set response headers for PDF download
-          res.set('Content-Type', 'application/pdf');
-          res.set('Content-Disposition', `attachment; filename="invoice-${orderId}.pdf"`);
-          
-          // Send the PDF as response
-          res.send(invoicePdf);
-        } catch (error) {
-          console.log(error);
-          req.flash('error', 'Failed to download invoice');
-          res.redirect('/orders');
+          return res.redirect('/cart');
         }
       }
 }

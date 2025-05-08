@@ -25,7 +25,7 @@ router.use('/cart', isAuthenticated, cartRoutes)
 // router.get('/checkout')
 router.use('/checkout', isAuthenticated, checkoutRoutes)
 
-router.get('/invoice/:id', Controller.downloadInvoice);
+// router.get('/invoice/:id', Controller.downloadInvoice);
 
 // Logout
 router.get('/logout', (req, res) => {
