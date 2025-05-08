@@ -1,0 +1,32 @@
+{
+  "name": "sgt_mart",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StevenOng1096/sgt_mart.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/StevenOng1096/sgt_mart/issues"
+  },
+  "homepage": "https://github.com/StevenOng1096/sgt_mart#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "easyinvoice": "^3.0.47",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "pg": "^8.15.6",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.6.3"
+  }
+}

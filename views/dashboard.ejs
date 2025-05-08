@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .product-img {
+            height: 100px;
+            object-fit: contain;
+        }
+        .badge-cart {
+            position: relative;
+            top: -8px;
+            right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">My App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="fas fa-home me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">
+                            <i class="fas fa-user me-1"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/cart">
+                            <i class="fas fa-shopping-cart me-1"></i> Cart
+                            <span class="badge rounded-pill bg-danger badge-cart">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-4">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title">
+                            <i class="fas fa-user-circle text-primary me-2"></i>
+                            Welcome, <%= user.email %>
+                        </h2>
+                        <p class="text-muted">Here's your personalized dashboard</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h3 class="mb-0">
+                    <i class="fas fa-box me-2 text-primary"></i>
+                    Products
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% products.forEach((el, i) => { %>
+                                <tr>
+                                    <td><%= i + 1 %></td>
+                                    <td class="fw-bold"><%= el.name %></td>
+                                    <td>
+                                        <img src="<%= el.imageUrl %>" alt="<%= el.name %>" class="img-thumbnail product-img">
+                                    </td>
+                                    <td><%= el.description %></td>
+                                    <td class="fw-bold text-primary"><%= el.formatRupiah %></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">
+                                            <i class="fas fa-shopping-cart me-1"></i> Add to Cart
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-4">
+        <div class="container text-center">
+            <p class="mb-0 text-muted">© 2025 My App. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

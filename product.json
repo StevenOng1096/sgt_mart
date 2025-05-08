@@ -1,0 +1,58 @@
+[
+    {
+        "name": "Mesin Bor Kayu MT60 Maktec", 
+        "description": "Mesin bor kayu dengan merek Maktec",
+        "price": 400000,
+        "imageUrl": "https://drive.google.com/file/d/14X7ThwuC2kaoM89eW59eLlqgcUqPVFKu/view?usp=drive_link",
+        "CategoryId": 1
+    },
+    {
+        "name": "Mesin Bor Kayu RDR 10-3 RE Ryu",
+        "description": "Mesin bor kayu dengan merek Ryu",
+        "price": 600000,
+        "imageUrl": "https://drive.google.com/file/d/1bdIQTEulypMY7tbSglqYVnzIfwVoFPqK/view?usp=drive_link",
+        "CategoryId": 1
+    },
+    {
+        "name": "Mesin Serut Kayu N1900B Makita",
+        "description": "Mesin serut kayu dengan merek Makita",
+        "price": 750000,
+        "imageUrl": "https://drive.google.com/file/d/1xvFLMUEv4hMDeF0rOAsZ9VhHA6MUr498/view?usp=drive_link",
+        "CategoryId": 2
+    },
+    {
+        "name": "Mesin Serut Kayu RPL 82-3A Ryu",
+        "description": "Mesin serut kayu dengan merek Ryu",
+        "price": 600000,
+        "imageUrl": "https://drive.google.com/file/d/148gQwMyAXCK4i0hvK5Rf7vdUxLEa0qiM/view?usp=drive_link",
+        "CategoryId": 2
+    },
+    {
+        "name": "Mesin Trimmer MT370 Maktec",
+        "description": "Mesin Trimmer kayu merek Maktec",
+        "price": 850000,
+        "imageUrl": "https://drive.google.com/file/d/1RZ7J5g-KZ1368KdnvDjQRwAttlHd_ofW/view?usp=drive_link",
+        "CategoryId": 3
+    },
+    {
+        "name": "Mesin Trimmer RTR-1 Ryu",
+        "description": "Mesin Trimmer kayu merek Ryu",
+        "price": 700000,
+        "imageUrl": "https://drive.google.com/file/d/1uy_Cxpo4HUbttpt1BueohBIpL56gavVk/view?usp=drive_link",
+        "CategoryId": 3
+    },
+    {
+        "name": "Mesin Amplas Kayu MT925 Maktec",
+        "description": "Mesin amplas kayu merek Maktec",
+        "price": 900000,
+        "imageUrl": "https://drive.google.com/file/d/1wZJS0NC-7P9iCdKpky8wN3YabwBhrEf4/view?usp=drive_link",
+        "CategoryId": 4
+    },
+    {
+        "name": "Mesin Amplas Kayu ROS13-1A Ryu",
+        "description": "Mesin amplas kayu merek Ryu",
+        "price": 800000,
+        "imageUrl": "https://drive.google.com/file/d/187hAwFktnUZD_vUhp9IA37GdGN61VTYq/view?usp=drive_link",
+        "CategoryId": 4
+    }
+]
